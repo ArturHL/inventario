@@ -7,3 +7,63 @@
 .nav img{
     height: 40px;
 }
+.Container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 30px;
+    width: 100%;
+    gap: 10px;
+}
+.Card{
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    width:90%;
+    display: flex;
+    flex-direction: column;
+}
+.greenButton{
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+.greenButton:hover{
+    background-color: #45a049;
+}
+.redButton{
+    background-color: #f44336;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+.redButton:hover{
+    background-color: #da190b;
+}
+.recipe-list{
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.recipe-list li{
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+}

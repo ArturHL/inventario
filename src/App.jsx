@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import "./App.css";
+import { FaRegEdit } from "react-icons/fa";
 
 function App() {
   const [page, setPage] = useState("register");
 
   useEffect(() => {
     const saved = localStorage.getItem("page");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (saved) setPage(saved);
   }, []);
 
@@ -27,69 +29,71 @@ function App() {
       <div>
         {/* ------------------ REGISTRAR (ENTRADAS Y SALIDAS) ------------------ */}
         {page === "register" && (
-          <div>
+          <div className="Container">
             <h1>Registrar Movimientos</h1>
 
-            <form>
+            <form className="Card">
              <label>Producto Final (venta):</label>
-            <input
-              type="text"
-              name="producto_final"
-              placeholder="Ej: Latte Grande"
-              list="productosFinales"
-            />
-
-            <datalist id="productosFinales">
-              <option value="Latte Grande" />
-              <option value="Latte Chico" />
-              <option value="Capuchino" />
-              <option value="Mocha" />
-              <option value="Americano" />
-              <option value="Frappe Oreo" />
-              <option value="Chai Latte" />
-              <option value="Chocolate Caliente" />
-            </datalist>
+              <input
+                type="text"
+                name="producto_final"
+                placeholder="Ej: Latte Grande"
+                list="productosFinales"
+              />
+              <datalist id="productosFinales">
+                <option value="Latte Grande" />
+                <option value="Latte Chico" />
+                <option value="Capuchino" />
+                <option value="Mocha" />
+                <option value="Americano" />
+                <option value="Frappe Oreo" />
+                <option value="Chai Latte" />
+                <option value="Chocolate Caliente" />
+              </datalist>
               <br />
-
               <label>Cantidad:</label>
               <input type="number" name="cantidad" />
-
               <br />
-
-              <input type="radio" id="entrada" name="tipo" value="entrada" />
-              <label htmlFor="entrada">Entrada (insumos)</label>
-
-              <input type="radio" id="salida" name="tipo" value="salida" />
-              <label htmlFor="salida">Salida (venta producto final)</label>
-
+              <button className="redButton">Registrar</button>
+            </form>
+            <form className="Card">
+             <label>Insumo (compra):</label>
+              <input
+                type="text"
+                name="insumo"
+                placeholder="Ej: Café"
+                list="insumos"
+              />
+              <datalist id="insumos">
+                <option value="Café" />
+                <option value="Leche" />
+                <option value="Chocolate" />
+                <option value="Canela" />
+              </datalist>
               <br />
-
-              <button>Registrar</button>
+              <label>Cantidad:</label>
+              <input type="number" name="cantidad" />
+              <br />
+              <button className="greenButton">Ingresar</button>
             </form>
           </div>
         )}
 
         {/* ------------------ RECETAS ------------------ */}
         {page === "recipes" && (
-          <div>
+          <div className="Container">
             <h1>Recetas</h1>
 
-            <h2>Crear / Editar Receta</h2>
-            <form>
+            <h2>Crear Receta</h2>
+            <form className="Card">
               <label>Producto Final:</label>
               <input type="text" placeholder="Ej: Latte Grande" />
-
-              <br />
 
               <label>Insumo:</label>
               <input type="text" placeholder="Ej: Café" />
 
               <label>Cantidad:</label>
               <input type="text" placeholder="Ej: 18g" />
-
-              <button type="button">
-                Agregar insumo a receta
-              </button>
 
               <br />
 
@@ -98,45 +102,45 @@ function App() {
               </button>
             </form>
 
-            <br />
-            <hr />
-            <br />
-
             <h2>Recetas Registradas</h2>
-
             <ul className="recipe-list">
               <li>
-                <strong>Latte Grande</strong>
-                <ul>
-                  <li>Café — 18g</li>
-                  <li>Leche — 250ml</li>
-                  <li>Vaso Grande — 1</li>
-                  <li>Tapa — 1</li>
-                </ul>
-                <button>Eliminar</button>
+                Latte Grande <FaRegEdit />
               </li>
-
               <li>
-                <strong>Latte Chico</strong>
-                <ul>
-                  <li>Café — 12g</li>
-                  <li>Leche — 180ml</li>
-                  <li>Vaso Chico — 1</li>
-                </ul>
-                <button>Eliminar</button>
+                Capuchino <FaRegEdit />
               </li>
-
               <li>
-                <strong>Capuchino</strong>
-                <ul>
-                  <li>Café — 18g</li>
-                  <li>Leche — 220ml</li>
-                  <li>Canela — 1 pizca</li>
-                  <li>Vaso Mediano — 1</li>
-                </ul>
-                <button>Eliminar</button>
+                Mocha <FaRegEdit />
               </li>
             </ul>
+
+            <div className="editMenu Card">
+              <h3>Editar Receta: Latte Grande</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Insumo</th>
+                    <th>Cantidad</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Café</td>
+                    <td>18g</td>
+                  </tr>
+                  <tr>
+                    <td>Leche</td>
+                    <td>240ml</td>
+                  </tr>
+                  <tr>
+                    <td>Jarabe de Vainilla</td>
+                    <td>30ml</td>
+                  </tr>
+                </tbody>
+              </table>
+              <button type="button">Guardar Cambios</button>
+            </div>
           </div>
         )}
 
@@ -213,8 +217,31 @@ function App() {
 
         {/* ------------------ INVENTARIO ------------------ */}
         {page === "inventory" && (
-          <div>
+          <div className="Container">
             <h1>Inventario Actual (Insumos)</h1>
+            <div className="Card">
+              <h3>Filtrar</h3>
+              Nombre:
+              <input type="text" placeholder="Busqueda por nombre"/>
+              Disponibilidad:
+              <select>
+                <option value="all">Todos</option>
+                <option value="low">Baja Disponibilidad</option>
+              </select>
+              Cantidad
+              <select name="" id="">
+                <option value="asc">Cantidad Ascendente</option>
+                <option value="desc">Cantidad Descendente</option>
+              </select>
+              Categoria:
+              <select name="" id="">
+                <option value="cafe">Cafeteria</option>
+                <option value="cocina">Cocina</option>
+                <option value="limpieza">Limpieza</option>
+                <option value="panaderia">Panaderia</option>
+              </select>
+              <button className="greenButton">Aplicar</button>
+            </div>
             <table>
               <thead>
                 <tr>
@@ -351,6 +378,20 @@ function App() {
                 </tr>
               </tbody>
             </table>
+
+
+            <h2>Agregar Nuevo Producto al Inventario</h2>
+            <form className="Card">
+              <label>Nombre del Producto:</label>
+              <input type="text" placeholder="Latte Grande" />
+              <button>Agregar</button>
+            </form>
+            <h2>Agregar Nuevo insumo al inventario</h2>
+            <form className="Card">
+              <label>Nombre del insumo:</label>
+              <input type="text" placeholder="Café" />
+              <button>Agregar</button>
+            </form>
           </div>
         )}
       </div>
