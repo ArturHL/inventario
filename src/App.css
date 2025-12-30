@@ -1,12 +1,3 @@
-.nav{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px;
-}
-.nav img{
-    height: 40px;
-}
 .Container{
     display: flex;
     flex-direction: column;
@@ -69,4 +60,160 @@
 }
 .inactive{
     display: none;
+}
+
+
+
+
+
+/* Navigation Bar */
+.nav{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+}
+.nav img{
+  height: 60px;
+}
+.nav .shopMenuSection{
+  width: 80px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-left: 5px;
+  z-index: 110;
+}
+.nav .btnMenuNav{
+  z-index: 110;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.5s ease-in-out;
+}
+.nav .btnMenuNav svg{
+  height: 10px;
+  transition: all 0.3s ease-in-out;
+}
+.nav .btnMenuNav svg path{
+  transform-origin: center;
+  transform: scale(4);
+}
+
+/* Drop Down Menu */
+.dropDownMenu{
+  position: fixed;
+  top: -100vh;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: white;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.5s ease-in-out;
+}
+.dropDownMenu ul{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  
+}
+.dropDownMenu ul li{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 20px;
+    cursor: pointer;
+    font-size: 22px;
+    border-bottom: rgba(151, 91, 57) 2px solid;
+}
+.dropDownMenu ul li:hover svg{
+  transform: scale(1.2);
+}
+.dropDownMenu ul li svg{
+  width: 30px;
+  height: auto;
+  margin-bottom: 10px;
+  transition: all 0.2s ease-in-out;
+}
+/* Condicional */
+.drop {
+  transform: translateY(100vh)
+}
+
+.unDrop {
+  transform: translateY(-100vh)
+}
+
+/*  */
+
+.visuallyHidden {
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  width: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+}
+
+.hamburger {
+  width: 30px;
+  height: 30px;
+  position: relative;
+}
+
+.hamburger .bar {
+  padding: 0;
+  width: 30px;
+  height: 4px;
+  background-color: black;
+  display: block;
+  border-radius: 6px;
+  transition: all 0.4s ease-in-out;
+  position: absolute;
+}
+
+.bar1 {
+  top: 0;
+}
+
+.bar2,
+.bar3 {
+  top: 13.5px;
+}
+
+.bar3 {
+  right: 0;
+}
+
+.bar4 {
+  bottom: 0;
+}
+
+/* HAMBURGER 2 */
+
+.checkbox2:checked+label>.hamburger2>.bar1 {
+  transform: translateX(40px);
+  background-color: transparent;
+}
+
+.checkbox2:checked+label>.hamburger2>.bar2 {
+  transform: rotate(45deg);
+}
+
+.checkbox2:checked+label>.hamburger2>.bar3 {
+  transform: rotate(-45deg);
+}
+
+.checkbox2:checked+label>.hamburger2>.bar4 {
+  transform: translateX(-40px);
+  background-color: transparent;
 }

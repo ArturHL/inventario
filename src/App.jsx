@@ -8,6 +8,7 @@ import Categories from "./pages/categories";
 
 function App() {
   const [page, setPage] = useState("register");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("page");
@@ -19,31 +20,65 @@ function App() {
     localStorage.setItem("page", page);
   }, [page]);
 
+  function toggleMenu() {
+    setMenuOpen(prev => !prev);
+  }
+
+  function goTo(pageName) {
+    setPage(pageName);
+    setMenuOpen(false); // CIERRA MENU Y RESETEA BOTÓN
+  }
+
   return (
     <>
       <nav className="nav">
         <img src="/logoCafe.png" alt="Logo" />
 
-        <span onClick={() => setPage("register")}>Registrar</span>
-        <span onClick={() => setPage("recipes")}>Recetas</span>
-        <span onClick={() => setPage("categories")}>Categorias</span>
-        <span onClick={() => setPage("inventory")}>Inventario</span>
-        <span onClick={() => setPage("products")}>Productos</span>
+        <div className="shopMenuSection">
+          <div className="btnMenuNav">
+            <input
+              type="checkbox"
+              id="checkbox2"
+              className="checkbox2 visuallyHidden"
+              checked={menuOpen}
+              onChange={toggleMenu}
+            />
+            <label htmlFor="checkbox2">
+              <div className="hamburger hamburger2">
+                <span className="bar bar1"></span>
+                <span className="bar bar2"></span>
+                <span className="bar bar3"></span>
+                <span className="bar bar4"></span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <menu
+          className={`dropDownMenu ${
+            menuOpen ? "drop" : "inactive"
+          }`}
+        >
+          <ul>
+            <li onClick={() => goTo("register")}>Movimientos</li>
+            <li onClick={() => goTo("recipes")}>Recetas</li>
+            <li onClick={() => goTo("categories")}>Categorias</li>
+            <li onClick={() => goTo("inventory")}>Inventario</li>
+            <li onClick={() => goTo("products")}>Productos</li>
+          </ul>
+        </menu>
       </nav>
+
       <div>
-        {/* ------------------ REGISTRAR (ENTRADAS Y SALIDAS) ------------------ */}
         {page === "register" && <RegisterMovements />}
-        {/* ------------------ RECETAS ------------------ */}
         {page === "recipes" && <Recipes />}
-        {/* ------------------ REPORTES (SALIDAS) ------------------ */}
         {page === "categories" && <Categories />}
-        {/* ------------------ INVENTARIO ------------------ */}
         {page === "inventory" && <Inventory />}
-        {/* ----------------------------PRODUCTOS---------------------------------- */}
         {page === "products" && <Products />}
       </div>
+
       <footer>
-        <p>Sistema de Inventario · Click Cacao · Versión 0.1 (Demo)</p>
+        <p>Sistema de Inventario · Click Cacao · Versión 0.3 (Alpha)</p>
         <p>© 2025 Click Cacao — Uso interno</p>
       </footer>
     </>

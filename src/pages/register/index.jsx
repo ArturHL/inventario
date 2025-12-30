@@ -1,27 +1,43 @@
 // src/components/RegisterMovements.jsx
+import { useEffect, useState } from "react";
+import { getMovements } from "../../api/movements.js";
+import { getInsumos } from "../../api/insumos.js";
+import { getProducts } from "../../api/products.js";
+
 
 export default function RegisterMovements() {
+  const [movements, setMovements] = useState([]);
+  const [insumos, setInsumos] = useState([]);
+  const [productos, setProductos] = useState([]);
+
+  useEffect(() => {
+    getMovements().then(setMovements);
+    getInsumos().then(setInsumos);
+    getProducts().then(setProductos);
+  }, []);
+
   return (
     <div className="Container">
       <h1>Registrar Movimientos</h1>
 
+      {/* Formulario de ventas */}
       <form className="Card">
         <label>Producto Final (venta):</label>
+
         <input
           type="text"
           name="producto_final"
           placeholder="Ej: Latte Grande"
           list="productosFinales"
         />
+
         <datalist id="productosFinales">
-          <option value="Latte Grande" />
-          <option value="Latte Chico" />
-          <option value="Capuchino" />
-          <option value="Mocha" />
-          <option value="Americano" />
-          <option value="Frappe Oreo" />
-          <option value="Chai Latte" />
-          <option value="Chocolate Caliente" />
+          {productos.map(producto => (
+            <option
+              key={producto.producto_id}
+              value={`${producto.nombre}`}
+            />
+          ))}
         </datalist>
 
         <label>Cantidad:</label>
@@ -30,19 +46,24 @@ export default function RegisterMovements() {
         <button className="redButton">Registrar</button>
       </form>
 
+      {/* Formulario de compras */}
       <form className="Card">
         <label>Insumo (compra):</label>
+
         <input
           type="text"
           name="insumo"
           placeholder="Ej: Café"
           list="insumos"
         />
+
         <datalist id="insumos">
-          <option value="Café" />
-          <option value="Leche" />
-          <option value="Chocolate" />
-          <option value="Canela" />
+          {insumos.map(insumo => (
+            <option
+              key={insumo.insumo_id}
+              value={`${insumo.nombre} (${insumo.unidad_base})`}
+            />
+          ))}
         </datalist>
 
         <label>Cantidad:</label>
@@ -50,75 +71,56 @@ export default function RegisterMovements() {
 
         <button className="greenButton">Ingresar</button>
       </form>
-          <div className="Container">
-      <h1>Reportes (Ventas / Salidas)</h1>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Producto Final</th>
-            <th>Cantidad Vendida</th>
-            <th>Fecha</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Latte Grande</td>
-            <td>12</td>
-            <td>2024-01-01</td>
-          </tr>
-          <tr>
-            <td>Capuchino</td>
-            <td>8</td>
-            <td>2024-01-02</td>
-          </tr>
-          <tr>
-            <td>Oreo Frappé</td>
-            <td>5</td>
-            <td>2024-01-03</td>
-          </tr>
-          <tr>
-            <td>Latte Chico</td>
-            <td>14</td>
-            <td>2024-01-04</td>
-          </tr>
-        </tbody>
-      </table>
+      {/* Tabla de reportes */}
+      <div className="Container">
+        <h1>Reportes</h1>
+        <h2>Salidas (Productos Vendidos)</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody>
+            {movements
+              .filter(m => m.tipo === "salida")
+              .map(m => (
+                <tr key={m.movimiento_id}>
+                  <td>{m.productos?.nombre}</td>
+                  <td>{m.cantidad}</td>
+                  <td>{new Date(m.fecha).toLocaleDateString()}</td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
 
-      <h2>Entradas (Insumos Recibidos)</h2>
+        <h2>Entradas (Insumos Recibidos)</h2>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Insumo</th>
-            <th>Cantidad</th>
-            <th>Fecha</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Café</td>
-            <td>5 kg</td>
-            <td>2024-01-01</td>
-          </tr>
-          <tr>
-            <td>Leche</td>
-            <td>20 L</td>
-            <td>2024-01-02</td>
-          </tr>
-          <tr>
-            <td>Vasos Grandes</td>
-            <td>200 piezas</td>
-            <td>2024-01-03</td>
-          </tr>
-          <tr>
-            <td>Jarabe de Vainilla</td>
-            <td>5 botellas</td>
-            <td>2024-01-05</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Insumo</th>
+              <th>Cantidad</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody>
+            {movements
+              .filter(m => m.tipo === "entrada")
+              .map(m => (
+                <tr key={m.movimiento_id}>
+                  <td>{m.insumos?.nombre}</td>
+                  <td>{m.cantidad}</td>
+                  <td>{new Date(m.fecha).toLocaleDateString()}</td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+
+      </div>
     </div>
   );
 }

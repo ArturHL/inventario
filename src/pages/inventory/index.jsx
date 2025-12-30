@@ -128,7 +128,7 @@ export default function Inventory() {
                             }}
                         />
                         {item.insumo_id}
-                        </td>
+                    </td>
                     <td>{item.nombre}</td>
                     <td>{item.unidad_base}</td>
                     <td>{item.categoria}</td>
