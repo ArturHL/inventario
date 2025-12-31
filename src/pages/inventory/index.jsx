@@ -64,7 +64,7 @@ export default function Inventory() {
                     setFilters({ ...filters, name: e.target.value })
                 }
             />
-            Disponibilidad:
+            {/* Disponibilidad:
             <select
                 value={filters.availability}
                 onChange={e =>
@@ -73,8 +73,7 @@ export default function Inventory() {
                 >
                 <option value="all">Todos</option>
                 <option value="low">Baja Disponibilidad</option>
-            </select>
-
+            </select> */}
             Categoria:
             <select
                 value={filters.category}

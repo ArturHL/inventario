@@ -1,7 +1,14 @@
 // src/components/Recipes.jsx
+import './index.css';
 import { FaRegEdit } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import { getProductosConReceta, getRecetaByProducto } from "../../api/recipes";
+import {
+  getProductosConReceta,
+  getRecetaByProducto,
+  updateRecetas,
+  deleteRecetas,
+  createReceta
+} from "../../api/recipes";
 import { getProducts } from "../../api/products";
 import { getInsumos } from "../../api/insumos";
 
@@ -12,7 +19,10 @@ export default function Recipes() {
 
   const [loading, setLoading] = useState(true);
   const [productoActivo, setProductoActivo] = useState(null);
+
   const [receta, setReceta] = useState([]);
+  const [recetaOriginal, setRecetaOriginal] = useState([]);
+
   const [editOpen, setEditOpen] = useState(false);
 
   const [newReceta, setNewReceta] = useState({
@@ -20,13 +30,21 @@ export default function Recipes() {
     insumo_id: null,
     cantidad_por_unidad: ""
   });
+  const insumosDisponibles = newReceta.producto_id
+  ? insumos.filter(
+      i =>
+        !receta.some(r => r.insumo_id === i.insumo_id)
+    )
+  : insumos;
 
 
   async function handleEdit(producto) {
     try {
       const data = await getRecetaByProducto(producto.producto_id);
+
       setProductoActivo(producto);
       setReceta(data);
+      setRecetaOriginal(JSON.parse(JSON.stringify(data))); // copia profunda
       setEditOpen(true);
     } catch (err) {
       console.error(err);
@@ -34,117 +52,161 @@ export default function Recipes() {
     }
   }
 
-useEffect(() => {
-  async function fetchData() {
+  async function handleSaveChanges() {
     try {
-      const recetas = await getProductosConReceta();
-      const prods = await getProducts();
-      const ins = await getInsumos();
+      const updates = [];
+      const deletes = [];
 
-      setProductosConReceta(recetas);
-      setProductos(prods);
-      setInsumos(ins);
+      receta.forEach((item, index) => {
+        const original = recetaOriginal[index];
+
+        // DELETE si queda en 0
+        if (item.cantidad_por_unidad === 0) {
+          deletes.push(item.receta_id);
+          return;
+        }
+
+        // UPDATE si cambió
+        if (item.cantidad_por_unidad !== original.cantidad_por_unidad) {
+          updates.push({
+            receta_id: item.receta_id,
+            cantidad_por_unidad: item.cantidad_por_unidad
+          });
+        }
+      });
+
+      if (updates.length) await updateRecetas(updates);
+      if (deletes.length) await deleteRecetas(deletes);
+
+      alert("Receta actualizada correctamente");
+      setEditOpen(false);
+
     } catch (err) {
-      console.error("Error al cargar datos:", err);
-    } finally {
-      setLoading(false);
+      console.error(err);
+      alert("Error al guardar cambios");
     }
   }
 
-  fetchData();
-}, []);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const recetas = await getProductosConReceta();
+        const prods = await getProducts();
+        const ins = await getInsumos();
 
+        setProductosConReceta(recetas);
+        setProductos(prods);
+        setInsumos(ins);
+      } catch (err) {
+        console.error("Error al cargar datos:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
 
   return (
     <div className="Container">
       <h1>Recetas</h1>
 
-    <h2>Crear Receta</h2>
+      {/* CREAR RECETA */}
+      <h2>Crear Receta</h2>
 
-    <form
-      className="Card"
-      onSubmit={e => {
-        e.preventDefault();
+      <form
+        className="Card"
+        onSubmit={async e => {
+          e.preventDefault();
 
-        if (
-          !newReceta.producto_id ||
-          !newReceta.insumo_id ||
-          !newReceta.cantidad_por_unidad
-        ) {
-          alert("Completa todos los campos");
-          return;
-        }
+          if (
+            !newReceta.producto_id ||
+            !newReceta.insumo_id ||
+            Number(newReceta.cantidad_por_unidad) <= 0
+          ) {
+            alert("Completa todos los campos correctamente");
+            return;
+          }
 
-        console.log(newReceta); // aquí luego llamas al endpoint
-      }}
-    >
-      {/* PRODUCTO */}
-      <label>Producto Final:</label>
-      <select
-        value={newReceta.producto_id ?? ""}
-        onChange={e =>
-          setNewReceta({
-            ...newReceta,
-            producto_id: Number(e.target.value)
-          })
-        }
+          try {
+            await createReceta(newReceta);
+
+            alert("Receta creada correctamente");
+
+            // Reset form
+            setNewReceta({
+              producto_id: null,
+              insumo_id: null,
+              cantidad_por_unidad: ""
+            });
+
+            // Refrescar productos con receta
+            const recetas = await getProductosConReceta();
+            setProductosConReceta(recetas);
+
+          } catch (err) {
+            alert(err.message || "Error al crear receta");
+            console.error(err);
+          }
+        }}
       >
-        <option value="" disabled>
-          Selecciona un producto
-        </option>
+        <label>Producto Final:</label>
+        <select
+          value={newReceta.producto_id ?? ""}
+          onChange={e =>
+            setNewReceta({
+              ...newReceta,
+              producto_id: Number(e.target.value)
+            })
+          }
+        >
+          <option value="" disabled>Selecciona un producto</option>
+          {productos.map(p => (
+            <option key={p.producto_id} value={p.producto_id}>
+              {p.nombre}
+            </option>
+          ))}
+        </select>
 
-        {productos.map(p => (
-          <option key={p.producto_id} value={p.producto_id}>
-            {p.nombre}
-          </option>
-        ))}
-      </select>
+        <label>Insumo:</label>
+        <select
+          value={newReceta.insumo_id ?? ""}
+          onChange={e =>
+            setNewReceta({
+              ...newReceta,
+              insumo_id: Number(e.target.value)
+            })
+          }
+        >
+          <option value="" disabled>Selecciona un insumo</option>
+          {insumosDisponibles.map(i => (
+            <option key={i.insumo_id} value={i.insumo_id}>
+              {i.nombre} ({i.unidad_base})
+            </option>
+          ))}
+        </select>
 
-      {/* INSUMO */}
-      <label>Insumo:</label>
-      <select
-        value={newReceta.insumo_id ?? ""}
-        onChange={e =>
-          setNewReceta({
-            ...newReceta,
-            insumo_id: Number(e.target.value)
-          })
-        }
-      >
-        <option value="" disabled>
-          Selecciona un insumo
-        </option>
+        <label>Cantidad por unidad:</label>
+        <input
+          type="number"
+          step="0.01"
+          value={newReceta.cantidad_por_unidad}
+          onChange={e =>
+            setNewReceta({
+              ...newReceta,
+              cantidad_por_unidad: e.target.value
+            })
+          }
+        />
 
-        {insumos.map(i => (
-          <option key={i.insumo_id} value={i.insumo_id}>
-            {i.nombre} ({i.unidad_base})
-          </option>
-        ))}
-      </select>
+        <button type="submit">Guardar Receta</button>
+      </form>
 
-      {/* CANTIDAD */}
-      <label>Cantidad por unidad:</label>
-      <input
-        type="number"
-        step="0.01"
-        placeholder="Ej: 18"
-        value={newReceta.cantidad_por_unidad}
-        onChange={e =>
-          setNewReceta({
-            ...newReceta,
-            cantidad_por_unidad: e.target.value
-          })
-        }
-      />
-
-      <button type="submit">Guardar Receta</button>
-    </form>
-
-
+      {/* LISTADO */}
       <h2>Recetas Registradas</h2>
       {loading ? (
         <p>Cargando recetas...</p>
-      ) : productos.length === 0 ? (
+      ) : productosConReceta.length === 0 ? (
         <p>No hay recetas registradas</p>
       ) : (
         <ul className="recipe-list">
@@ -160,6 +222,7 @@ useEffect(() => {
         </ul>
       )}
 
+      {/* EDITAR */}
       {editOpen && (
         <div className="editMenu Card">
           <h3>Editar Receta: {productoActivo.nombre}</h3>
@@ -173,12 +236,13 @@ useEffect(() => {
             </thead>
             <tbody>
               {receta.map((item, index) => (
-                <tr key={index}>
+                <tr key={item.receta_id}>
                   <td>
                     {item.insumos.nombre} ({item.insumos.unidad_base})
                   </td>
                   <td>
                     <input
+                      className="inputRecipeEdit"
                       type="number"
                       value={item.cantidad_por_unidad}
                       onChange={e => {
@@ -193,10 +257,11 @@ useEffect(() => {
             </tbody>
           </table>
 
-          <button type="button">Guardar Cambios</button>
+          <button type="button" onClick={handleSaveChanges}>
+            Guardar Cambios
+          </button>
         </div>
       )}
-
     </div>
   );
 }
