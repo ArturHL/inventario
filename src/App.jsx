@@ -78,8 +78,8 @@ function App() {
       </div>
 
       <footer>
-        <p>Sistema de Inventario · Click Cacao · Versión 0.3 (Alpha)</p>
-        <p>© 2025 Click Cacao — Uso interno</p>
+        <p>Sistema de Inventario · Click Cacao · Versión 1.0 (Beta)</p>
+        <p>© 2026 Click Cacao — Uso interno</p>
       </footer>
     </>
   );
